@@ -1,6 +1,6 @@
-import ZDClient from './modules/ZDClient.js';
+import { zdActions } from './modules/ZDClient.js';
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   const initVueApp = () => {
     new Vue({
       el: '#zd-app',
@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   };
 
-  ZDClient.init();
-  ZDClient.events['ON_APP_REGISTERED'](initVueApp);
+  zdActions.init();
+  await zdActions.setAppSettings();
+  initVueApp();
 });
