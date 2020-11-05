@@ -1,42 +1,18 @@
 let CLIENT = null;
-let APP_SETTINGS = null;
 
-const ZDClient = {
+export const zdState = {
+  settings: null
+};
 
-  events: {
-    ON_APP_REGISTERED(cb) {
-      return CLIENT.on('app.registered', async (data) => {
-        APP_SETTINGS = data.metadata.settings;
-        return cb(data);
-      });
-    },
-  },
-
+export const zdActions = {
   init() {
     CLIENT = ZAFClient.init();
   },
-
-  /**
-   * Set getters for privite objects
-   */
-  app: {
-    get settings() { return APP_SETTINGS; },
-
-    /**
-     * It returns true if the app is installed in the instance, false if
-     * it's running locally
-     */
-    get isProduction() { return !!this.settings['IS_PRODUCTION']; },
+  async setAppSettings() {
+    const appSettings = await zdActions.zdEvents('app.registered');
+    if (appSettings) zdState.settings = appSettings.metadata.settings;
   },
-
-  /**
-   * It sets the frame height using on the passed value.
-   * If no value has been passed, 80 will be set as default heigth.
-   * @param {Int} newHeight
-   */
-  resizeFrame(appHeight) {
-    CLIENT.invoke('resize', { width: '100%', height: `${appHeight}px` });
-  },
+  async zdEvents(zdEvent) {
+    return await CLIENT.on(zdEvent, async (data) => data);
+  }
 };
-
-export default ZDClient;
